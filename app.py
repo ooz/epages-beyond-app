@@ -35,7 +35,7 @@ def root():
     if has_byd_credentials():
         return render_template('index.html', installed=True)
     return render_template('index.html', installed=False)
- 
+
 @app.route('/callback')
 def callback():
     global API_URL
@@ -107,7 +107,7 @@ def limit_open_proxy_requests():
 
 def is_allowed_request():
     url = request.url_root
-    return 'epages-beyond-app.herokuapp.com' in url or \
+    return '.herokuapp.com' in url or \
            '.ngrok.io' in url or \
            'localhost:8080' in url or \
            '0.0.0.0:80' in url
