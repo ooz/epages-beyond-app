@@ -31,8 +31,8 @@ def _get_byd_shop_logo(client):
     shop_images = {}
     try:
         shop_images = client.get('/shop/images')
-    except epages.RESTError, error:
-        print unicode(error)
+    except epages.RESTError as error:
+        print(str(error))
     shop_images = [img for img \
                         in shop_images.get('_embedded', {}).get('images', []) \
                         if img.get('label', '') == 'logo']
@@ -113,8 +113,8 @@ class BydOrderViewData(OrderViewData):
         shop = {}
         try:
             shop = self.client.get('/shop')
-        except epages.RESTError, error:
-            print unicode(error)
+        except epages.RESTError as error:
+            print(str(error))
         self.shop_name = escape(shop.get('name', ''))
         self.shop_email = shop.get('address', {}).get('email', '')
         self.logo_url = _get_byd_shop_logo(self.client)
@@ -134,8 +134,8 @@ class OrderExtendedViewData(OrderViewData):
         order = {}
         try:
             order = self.client.get(self_link)
-        except epages.RESTError, error:
-            print unicode(error)
+        except epages.RESTError as error:
+            print(str(error))
         line_item_container = order.get('lineItemContainer', {})
         product_line_items = line_item_container.get('productLineItems', [])
         self.shipping_total = order.get('shippingData', {}).get('price', {}).get('formatted', None)
