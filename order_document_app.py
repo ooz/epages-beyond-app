@@ -45,7 +45,7 @@ def callback():
     args = request.args
     ACCESS_TOKEN, API_URL, return_url = epages.get_access_token(CLIENT_ID, CLIENT_SECRET, args)
     init_client()
-    print 'access_token: %s' % ACCESS_TOKEN
+    print('access_token: %s' % ACCESS_TOKEN)
     return """<!DOCTYPE html>
 <html>
 <head>
@@ -103,9 +103,9 @@ def limit_open_proxy_requests():
     http://stackoverflow.com/questions/22251038/how-to-limit-flask-dev-server-to-only-one-visiting-ip-address
     '''
     if not is_allowed_request():
-        print "Someone is messing with us:"
-        print request.url_root
-        print request
+        print("Someone is messing with us:")
+        print(request.url_root)
+        print(request)
         abort(403)
 
 def is_allowed_request():
