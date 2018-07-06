@@ -142,10 +142,7 @@ def init():
 def init_client():
     global CLIENT
     global ORDERS_FOR_MERCHANT_KEY
-    if '--beyond' in sys.argv:
-        CLIENT = epages.BYDClient(API_URL, CLIENT_ID, CLIENT_SECRET)
-    else:
-        CLIENT = epages.RESTClient(API_URL, ACCESS_TOKEN)
+    CLIENT = epages.BYDClient(API_URL, CLIENT_ID, CLIENT_SECRET)
     ORDERS_FOR_MERCHANT_KEY = API_URL + ACCESS_TOKEN
 
 def has_client_credentials_or_private_app_credentials():

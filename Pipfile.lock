@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "660367f072a846ffee496125bc6ab6ccfc4eeef4a17bbfed78fbe6e2407d1ea7"
+            "sha256": "37893850da9f1a842eb28a007e055597e1b7c20811eeafe57029a81b89e8341e"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -47,6 +47,12 @@
                 "sha256:f15516df478d5a56180fbf80e68f206010e6d160fc39fa508b65e035fd75130b"
             ],
             "version": "==6.7"
+        },
+        "epages-rest-python": {
+            "hashes": [
+                "sha256:1d5d95cf7286302d946548f2cc537d7a087ff76d1434ca42476ca0809dbdc58d"
+            ],
+            "version": "==0.9.0"
         },
         "flask": {
             "hashes": [
