@@ -82,7 +82,7 @@ def pdf(order_id):
         filename = order_id + '.pdf'
         html_to_render = get_order_extended_pdf_str(CLIENT, order)
         pdfkit.from_string(html_to_render,
-                           filename)
+                           filename, configuration=pdfkit.configuration(wkhtmltopdf="./bin/wkhtmltopdf"))
         pdffile = open(filename)
         response = Response(pdffile.read(), mimetype='application/pdf')
         pdffile.close()
