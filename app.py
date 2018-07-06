@@ -148,7 +148,6 @@ def has_client_credentials():
 def has_byd_credentials():
     return API_URL != '' and has_client_credentials()
 
-
 init()
 if __name__ == '__main__':
     app.run()
