@@ -7,5 +7,16 @@
     "buildpacks": [
         { "url": "https://github.com/dscout/wkhtmltopdf-buildpack" },
         { "url": "heroku/python" }
-    ]
+    ],
+    "env": {
+        "API_URL": {
+            "value": "Insert-your-API-URL-here-or-leave-this-empty-for-installable-apps"
+        },
+        "CLIENT_ID": {
+            "value": "Insert-your-client-id-in-the-heroku-dashboard"
+        },
+        "CLIENT_SECRET": {
+            "value": "Insert-your-client-secret-in-the-heroku-dashboard"
+        }
+    }
 }

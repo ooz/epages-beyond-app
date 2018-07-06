@@ -1,4 +1,6 @@
-# Beautiful Order Documents
+# ePages Beyond Example App *Beautiful Order Documents*
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ooz/epages-beyond-app/tree/master)
 
 This app shows a list of orders for a configured shop.
 Each order has a link, that triggers rendering the order invoice as a PDF.
