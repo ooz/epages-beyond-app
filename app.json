@@ -3,5 +3,13 @@
     "description": "ePages Beyond example app to create beautiful order documents.",
     "website": "https://epages-beyond-app.herokuapp.com/",
     "repository": "https://github.com/ooz/epages-beyond-app",
-    "image": "heroku/python"
+    "image": "heroku/python",
+    "buildpacks": [
+    {
+      "url": "https://github.com/dscout/wkhtmltopdf-buildpack"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
 }
