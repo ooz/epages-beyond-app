@@ -1,1 +1,1 @@
-web: python order_document_app.py
+web: gunicorn app:app
