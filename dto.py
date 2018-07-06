@@ -77,8 +77,8 @@ class OrderViewData(object):
         self.billing_postcode = escape(billing_address.get('zipCode', ''))
         self.billing_town = escape(billing_address.get('city', ''))
 
-    def __unicode__(self):
-        return u'Order(%s, %s, %s)' % (self.order_number, self.customer, self.grand_total)
+    def __str__(self):
+        return 'Order(%s, %s, %s)' % (self.order_number, self.customer, self.grand_total)
 
     def render_pdf(self):
         return render_template('order_document.html', order=self)
@@ -160,7 +160,7 @@ class ProductViewData(object):
         super(ProductViewData, self).__init__()
         self.name = escape(product.get('name', ''))
         self.quantity = product.get('quantity', {}).get('amount', '')
-        self.tax = unicode(product.get('taxClass', {}).get('percentage', '')) \
+        self.tax = str(product.get('taxClass', {}).get('percentage', '')) \
                    .replace('.0', '') + ' %'
         self.price_per_item = product.get('singleItemPrice', {}).get('formatted', '')
         self.price_total = product.get('lineItemPrice', {}).get('formatted', '')
@@ -171,15 +171,15 @@ class ProductViewData(object):
         if icons:
             self.icon = icons[0].get('url', None)
 
-    def __unicode__(self):
-        return u'Product(%s)' % self.name
+    def __str__(self):
+        return 'Product(%s)' % self.name
 
 class BydProductViewData(object):
     def __init__(self, product):
         super(BydProductViewData, self).__init__()
         self.name = escape(product.get('product', {}).get('name', ''))
         self.quantity = product.get('quantity', {}).get('value', '')
-        self.tax = unicode(product.get('lineItemTax', {}).get('taxRate', ''))
+        self.tax = str(product.get('lineItemTax', {}).get('taxRate', ''))
         unit_price = product.get('unitPrice', {})
         self.price_per_item = u'%s %s' % (unit_price.get('amount', ''),
                                           unit_price.get('currency', ''))
@@ -191,9 +191,6 @@ class BydProductViewData(object):
         # Hack to remove the templated parameters breaking valid HTML hyperlinks
         self.icon = re.sub(r'\{.*\}', '', self.icon)
         self.icon += '&width=32'
-
-    def __unicode__(self):
-        return u'BydProduct(%s)' % self.name
 
     def __str__(self):
         return 'BydProduct(%s)' % self.name
