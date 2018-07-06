@@ -110,7 +110,8 @@ def limit_open_proxy_requests():
 
 def is_allowed_request():
     url = request.url_root
-    return '.ngrok.io' in url or \
+    return 'epages-beyond-app.herokuapp.com' in url or \
+           '.ngrok.io' in url or \
            'localhost:8080' in url or \
            '0.0.0.0:80' in url
 
