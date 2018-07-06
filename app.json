@@ -5,11 +5,7 @@
     "repository": "https://github.com/ooz/epages-beyond-app",
     "image": "heroku/python",
     "buildpacks": [
-    {
-      "url": "https://github.com/dscout/wkhtmltopdf-buildpack"
-    },
-    {
-      "url": "heroku/python"
-    }
-  ]
+        { "url": "https://github.com/dscout/wkhtmltopdf-buildpack.git" },
+        { "url": "heroku/python" }
+    ]
 }
