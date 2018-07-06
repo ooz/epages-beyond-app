@@ -1,0 +1,7 @@
+{
+    "name": "epages-beyond-app",
+    "description": "ePages Beyond example app to create beautiful order documents.",
+    "website": "https://epages-beyond-app.herokuapp.com/",
+    "repository": "https://github.com/ooz/epages-beyond-app",
+    "image": "heroku/python"
+}
