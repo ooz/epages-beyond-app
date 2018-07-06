@@ -68,7 +68,7 @@ def orderlist():
         ORDER_DB[ORDERS_FOR_MERCHANT_KEY] = orders_to_table(CLIENT, orders)
         orders = get_order_views(CLIENT, orders)
         return render_template('orderlist.html', orders=orders, logo=logo_url)
-    except epages.RESTError, e:
+    except epages.RESTError as e:
         return \
 u'''<h1>Something went wrong when fetching the order list! :(</h1>
 <pre>
