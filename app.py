@@ -8,7 +8,7 @@ Description:
 """
 
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
@@ -40,7 +40,7 @@ def callback():
     access_token_url = args.get("access_token_url")
     api_url = args.get("api_url")
     code = args.get("code")
-    signature = args.get("signature")
+    signature = unquote(args.get("signature"))
 
     try:
         APP_INSTALLATIONS.retrieve_token_from_auth_code(api_url, code, access_token_url, signature)
