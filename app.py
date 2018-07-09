@@ -12,6 +12,7 @@ import os
 import epages
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
+from app_installations import AppInstallations
 
 from dto import get_shop_logo, \
                 get_orders, \
@@ -22,27 +23,20 @@ from dto import get_shop_logo, \
 
 app = Flask(__name__)
 
-CLIENT_ID = ''
-CLIENT_SECRET = ''
-API_URL = ''
-CLIENT = None
 ORDER_DB = {}
 ORDERS_FOR_MERCHANT_KEY = ''
+APP_INSTALLATIONS = None
 
 
 @app.route('/')
 def root():
-    if has_byd_credentials():
-        return render_template('index.html', installed=True)
-    return render_template('index.html', installed=False)
+    return render_template('index.html', installed=True)
 
 @app.route('/callback')
 def callback():
-    global API_URL
     args = request.args
-    access_token, API_URL, return_url = epages.get_access_token(CLIENT_ID, CLIENT_SECRET, args)
-    init_client()
-    print('access_token: %s' % access_token)
+    #TODO add auth code flow
+    return_url = ""
     return """<!DOCTYPE html>
 <html>
 <head>
@@ -55,7 +49,7 @@ def callback():
 <a href="%s">return</a>
 </body>
 </html>
-""" % (return_url)
+""" % return_url
 
 @app.route('/ui/orderlist')
 def orderlist():
@@ -118,35 +112,14 @@ def page_not_found(e):
 
 
 def init():
-    global CLIENT_ID
-    global CLIENT_SECRET
-    global API_URL
-    global CLIENT
-    global ORDER_DB
+    global APP_INSTALLATIONS
 
     CLIENT_ID = os.environ.get('CLIENT_ID', '')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
-    API_URL = os.environ.get('API_URL', '')
+    api_url = os.environ.get('API_URL', '')
 
-    init_client()
-
-    ORDER_DB = {}
-
-    assert has_client_credentials_or_private_app_credentials(), \
-        'Please set either CLIENT_ID and CLIENT_SECRET and API_URL as environment variables!'
-
-def init_client():
-    global CLIENT
-    global ORDERS_FOR_MERCHANT_KEY
-    CLIENT = epages.BYDClient(API_URL, CLIENT_ID, CLIENT_SECRET)
-    ORDERS_FOR_MERCHANT_KEY = API_URL
-
-def has_client_credentials_or_private_app_credentials():
-    return has_client_credentials()
-def has_client_credentials():
-    return CLIENT_ID != '' and CLIENT_SECRET != ''
-def has_byd_credentials():
-    return API_URL != '' and has_client_credentials()
+    APP_INSTALLATIONS = AppInstallations(CLIENT_ID, CLIENT_SECRET)
+    APP_INSTALLATIONS.retrieve_token_from_client_credentials(api_url)
 
 init()
 if __name__ == '__main__':
