@@ -24,10 +24,10 @@ class AppInstallations(object):
             'grant_type': 'code',
             'code': auth_code
         }
-        token_response = requests.post(url=token_url,
-                                   data=params,
-                                   auth=(self.client_id, self.client_secret) ).json()
-
+        response = requests.post(url=token_url, data=params, auth=(self.client_id, self.client_secret))
+        print(response.text)
+        token_response = response.json()
+        print(token_response)
         installation = Installation(api_url=api_url,
                                     access_token=token_response.get('access_token'),
                                     refresh_token=token_response.get('refresh_token'),
