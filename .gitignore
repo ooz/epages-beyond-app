@@ -89,6 +89,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+run-app.sh
 
 # Spyder project settings
 .spyderproject
