@@ -13,6 +13,8 @@ import epages
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
 from app_installations import AppInstallations
+import requests
+import re
 
 from dto import get_shop_logo, \
                 get_orders, \
@@ -51,14 +53,26 @@ def callback():
 </html>
 """ % return_url
 
-@app.route('/ui/orderlist')
-def orderlist():
+@app.route('/ui/<hostname>/orders')
+def orderlist(hostname):
     try:
-        logo_url = get_shop_logo(CLIENT)
-        orders = get_orders(CLIENT)
-        ORDER_DB[ORDERS_FOR_MERCHANT_KEY] = orders_to_table(CLIENT, orders)
-        orders = get_order_views(CLIENT, orders)
-        return render_template('orderlist.html', orders=orders, logo=logo_url)
+        api_url = AppInstallations.get_api_url(hostname)
+        shop_images = requests.get(api_url + "/api/shop").json()
+        shop_images = [img for img \
+                       in shop_images.get('_embedded', {}).get('images', []) \
+                       if img.get('label', '') == 'logo']
+
+        logo_url = ''
+        if shop_images:
+            logo_url = shop_images[0].get('_links', {}).get('data', {}).get('href', '')
+        # Hack to remove image link template params
+        logo_url = re.sub(r'\{.*\}', '', logo_url)
+        logo_url += '&height=128'
+
+        #orders = get_orders(CLIENT)
+        #ORDER_DB[ORDERS_FOR_MERCHANT_KEY] = orders_to_table(CLIENT, orders)
+        #orders = get_order_views(CLIENT, orders)
+        return render_template('orderlist.html', orders=[], logo=logo_url)
     except epages.RESTError as e:
         return \
 u'''<h1>Something went wrong when fetching the order list! :(</h1>

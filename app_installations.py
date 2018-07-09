@@ -55,6 +55,10 @@ class AppInstallations(object):
             return self.retrieve_token_from_client_credentials(installation.api_url)
         return AppInstallations.installations[hostname].access_token
 
+    @staticmethod
+    def get_api_url(hostname):
+        return AppInstallations.installations[hostname].api_url
+
 class _Installation(object):
 
     def __init__(self, api_url, access_token, refresh_token=None, expiry_date=None):
