@@ -42,7 +42,7 @@
               {% if product.icon %} <img src="{{ product.icon }}" /> {% endif %} {{ product.name }}
               </td>
               <td>{{ product.quantity }}</td>
-              <td>{{ product.tax }}</td>
+              <td>{{ product.tax }}%</td>
               <td>{{ product.price_per_item }}</td>
               <td>{{ product.price_total }}</td></tr>
           {% endfor %}
