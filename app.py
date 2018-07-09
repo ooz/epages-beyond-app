@@ -118,6 +118,7 @@ def is_allowed_request():
     return '.herokuapp.com' in url or \
            '.ngrok.io' in url or \
            'localhost:8080' in url or \
+           '127.0.0' in url or \
            '0.0.0.0:80' in url
 
 @app.errorhandler(404)
