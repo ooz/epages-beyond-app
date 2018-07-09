@@ -53,7 +53,7 @@ class Order(OrderListItem):
         billing_address = order.get('billingAddress')
         self.billing_name = escape(self.customer)
         self.billing_street = escape('%s %s' % (billing_address.get('street', ''),
-                                                billing_address.get('houseNumber', '')))
+                                                billing_address.get('houseNumber', '') or ""))
         self.billing_postcode = escape(billing_address.get('postalCode', ''))
         self.billing_town = escape(billing_address.get('city', ''))
 
@@ -67,7 +67,7 @@ class ProductLineItem(object):
     def __init__(self, product):
         self.name = escape(product.get('product', {}).get('name', ''))
         self.quantity = product.get('quantity', {}).get('value', '')
-        self.tax = str(product.get('lineItemTax', {}).get('taxRate', ''))
+        self.tax = "%.0f" % product.get('lineItemTax', {}).get('taxRate', 0.0) * 100.0
         unit_price = product.get('unitPrice', {})
         self.price_per_item = u'%s %s' % (unit_price.get('amount', ''),
                                           unit_price.get('currency', ''))
