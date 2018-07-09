@@ -30,9 +30,9 @@ ORDERS_FOR_MERCHANT_KEY = ''
 APP_INSTALLATIONS = None
 
 
-@app.route('/')
-def root():
-    return render_template('index.html', installed=True)
+@app.route('/<hostname>')
+def root(hostname):
+    return render_template('index.html', installed=True, hostname=hostname)
 
 @app.route('/callback')
 def callback():
