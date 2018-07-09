@@ -4,14 +4,16 @@ import hmac
 from datetime import date, timedelta
 from urllib.parse import urlparse
 import requests
+import os
+import psycopg2
 
 class AppInstallations(object):
 
-    installations = {}
 
     def __init__(self, client_id, client_secret):
         self.client_secret = client_secret
         self.client_id = client_id
+        self.installations = {}
 
     def retrieve_token_from_auth_code(self, api_url, auth_code, token_url, signature):
 
@@ -33,7 +35,7 @@ class AppInstallations(object):
                                     refresh_token=token_response.get('refresh_token'),
                                     expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
 
-        AppInstallations.installations[urlparse(api_url).hostname] = installation
+        self.upsert_installation(installation)
 
         return installation.access_token
 
@@ -51,7 +53,7 @@ class AppInstallations(object):
                                     access_token=token_response.get('access_token'),
                                     expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
 
-        AppInstallations.installations[installation.hostname] = installation
+        self.upsert_installation(installation)
 
         return installation.access_token
 
@@ -59,7 +61,7 @@ class AppInstallations(object):
         installation = AppInstallations.installations[hostname]
         if installation.is_expired():
             return self.retrieve_token_from_client_credentials(installation.api_url)
-        return AppInstallations.installations[hostname].access_token
+        return self.get_installation(hostname).access_token
 
     def _calculate_signature(self, code, access_token_url, client_secret):
         message = '%s:%s' % (code, access_token_url)
@@ -68,13 +70,48 @@ class AppInstallations(object):
                           digestmod=hashlib.sha1).digest()
         return base64.b64encode(digest).decode('utf-8')
 
-    @staticmethod
-    def get_api_url(hostname):
-        return AppInstallations.installations[hostname].api_url
 
-    @staticmethod
-    def get_installation(hostname):
-        return AppInstallations.installations[hostname]
+    def get_api_url(self, hostname):
+        return self.get_installation(hostname).api_url
+
+    def get_installation(self, hostname):
+        return self.installations[hostname]
+    
+    def upsert_installation(self, installation):
+        self.installations[installation.hostname] = installation
+    
+        
+class PostgresAppInstallations(AppInstallations):
+    
+    def __init__(self, database_url, client_id, client_secret):
+        super().__init__(client_id, client_secret)
+        self.database_url = database_url
+
+    def create_table(self):
+        with psycopg2.connect(self.database_url) as conn:
+            with conn.cursor() as curs:
+                curs.execute("""CREATE TABLE IF NOT EXISTS APP_INSTALLATIONS (
+                              HOSTNAME varchar(255) UNIQUE NOT NULL,
+                              API_URL varchar(255) NOT NULL,
+                              ACCESS_TOKEN varchar(4096) NOT NULL,
+                              REFRESH_TOKEN varchar(4096) NOT NULL,
+                              EXPIRY_DATE timestamp NOT NULL
+                            );""")
+
+    def get_installation(self, hostname):
+        with psycopg2.connect(self.database_url) as conn:
+            with conn.cursor() as curs:
+                curs.execute("""SELECT * FROM APP_INSTALLATIONS WHERE HOSTNAME=%s""", hostname)
+                entry = curs.fetchone()
+                if entry:
+                    return Installation(api_url=entry[1],
+                                 access_token=entry[2],
+                                 refresh_token=entry[3],
+                                 expiry_date=entry[4])
+
+    def upsert_installation(self, installation):
+
+
 
 class Installation(object):
 
