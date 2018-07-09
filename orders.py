@@ -56,4 +56,29 @@ class Order(OrderListItem):
                                                 billing_address.get('houseNumber', '')))
         self.billing_postcode = escape(billing_address.get('postalCode', ''))
         self.billing_town = escape(billing_address.get('city', ''))
-        self.products = []
+
+        shipping_lineitem_price = order.get('shippingLineItem', {}).get('lineItemPrice', {})
+        self.shipping_total = '%s %s' % (shipping_lineitem_price.get('amount', ''),
+                                         shipping_lineitem_price.get('currency', ''))
+        self.products = [ProductLineItem(product) for product \
+                         in order.get('productLineItems', [])]
+
+class ProductLineItem(object):
+    def __init__(self, product):
+        self.name = escape(product.get('product', {}).get('name', ''))
+        self.quantity = product.get('quantity', {}).get('value', '')
+        self.tax = str(product.get('lineItemTax', {}).get('taxRate', ''))
+        unit_price = product.get('unitPrice', {})
+        self.price_per_item = u'%s %s' % (unit_price.get('amount', ''),
+                                          unit_price.get('currency', ''))
+        line_item_price = product.get('lineItemPrice', {})
+        self.price_total = u'%s %s' % (line_item_price.get('amount', ''),
+                                       line_item_price.get('currency', ''))
+        self.icon = product.get('product', {}).get('_links', {}) \
+                    .get('default-image-data', {}).get('href', None)
+        # Hack to remove the templated parameters breaking valid HTML hyperlinks
+        self.icon = re.sub(r'\{.*\}', '', self.icon)
+        self.icon += '&width=32'
+
+    def __str__(self):
+        return 'BydProduct(%s)' % self.name
