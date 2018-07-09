@@ -7,11 +7,12 @@ Description:
 """
 
 import os
+import logging
 from urllib.parse import urlparse, unquote
 
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
-from app_installations import AppInstallations
+from app_installations import AppInstallations, PostgresAppInstallations
 from orders import get_orders, get_order, get_shop_logo_url
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ ORDER_DB = {}
 ORDERS_FOR_MERCHANT_KEY = ''
 APP_INSTALLATIONS = None
 DEFAULT_HOSTNAME = ''
+LOGGER = logging.getLogger("app")
 
 @app.route('/')
 def root():
@@ -63,12 +65,14 @@ def callback():
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):
     try:
-        api_url = APP_INSTALLATIONS.get_api_url(hostname)
-        logo_url = get_shop_logo_url(api_url)
+        installation = APP_INSTALLATIONS.get_installation(hostname)
+        
+        logo_url = get_shop_logo_url(installation.api_url)
 
-        orders = get_orders(APP_INSTALLATIONS.get_installation(hostname))
+        orders = get_orders(installation)
         return render_template('orderlist.html', orders=orders, logo=logo_url)
     except Exception as e:
+        LOGGER.exception(e)
         return \
 u'''<h1>Something went wrong when fetching the order list! :(</h1>
 <pre>
@@ -126,10 +130,15 @@ def init():
     CLIENT_ID = os.environ.get('CLIENT_ID', '')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
     API_URL = os.environ.get('API_URL', '')
-    if API_URL != '':
+    if API_URL != '': # private app mode - we are operating in a single shop and can store the token in memory
+        print("Initialize in-memory AppInstallations")
         APP_INSTALLATIONS = AppInstallations(CLIENT_ID, CLIENT_SECRET)
         DEFAULT_HOSTNAME = urlparse(API_URL).hostname
         APP_INSTALLATIONS.retrieve_token_from_client_credentials(API_URL)
+    else: # official app mode - we can handle multiple installations for multiple shops and store data about app installation in postgres
+        print("Initialize PostgresAppInstallations")
+        APP_INSTALLATIONS = PostgresAppInstallations(os.environ.get('DATABASE_URL'), CLIENT_ID, CLIENT_SECRET)
+        APP_INSTALLATIONS.create_schema()
 
 init()
 if __name__ == '__main__':
