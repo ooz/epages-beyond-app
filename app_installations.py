@@ -21,7 +21,7 @@ class AppInstallations(object):
         #assert signature == calculated_signature, "signature invalid - found %s but expected %s" % (signature, calculated_signature)
 
         params = {
-            'grant_type': 'code',
+            'grant_type': 'authorization_code',
             'code': auth_code
         }
         response = requests.post(url=token_url, data=params, auth=(self.client_id, self.client_secret))
