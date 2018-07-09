@@ -13,15 +13,12 @@ import epages
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
 from app_installations import AppInstallations
+from orders import get_orders
 import requests
 import re
 
-from dto import get_shop_logo, \
-                get_orders, \
-                get_order_views, \
-                get_order_extended_pdf_str, \
-                orders_to_table
-
+from dto import get_order_views, \
+                get_order_extended_pdf_str
 
 app = Flask(__name__)
 
@@ -57,22 +54,10 @@ def callback():
 def orderlist(hostname):
     try:
         api_url = AppInstallations.get_api_url(hostname)
-        shop_images = requests.get(api_url + "/api/shop").json()
-        shop_images = [img for img \
-                       in shop_images.get('_embedded', {}).get('images', []) \
-                       if img.get('label', '') == 'logo']
+        logo_url = get_shop_logo_url(api_url)
 
-        logo_url = ''
-        if shop_images:
-            logo_url = shop_images[0].get('_links', {}).get('data', {}).get('href', '')
-        # Hack to remove image link template params
-        logo_url = re.sub(r'\{.*\}', '', logo_url)
-        logo_url += '&height=128'
-
-        #orders = get_orders(CLIENT)
-        #ORDER_DB[ORDERS_FOR_MERCHANT_KEY] = orders_to_table(CLIENT, orders)
-        #orders = get_order_views(CLIENT, orders)
-        return render_template('orderlist.html', orders=[], logo=logo_url)
+        orders = get_orders(AppInstallations.get_installation(hostname))
+        return render_template('orderlist.html', orders=orders, logo=logo_url)
     except epages.RESTError as e:
         return \
 u'''<h1>Something went wrong when fetching the order list! :(</h1>
@@ -80,6 +65,7 @@ u'''<h1>Something went wrong when fetching the order list! :(</h1>
 %s
 </pre>
 ''' % escape(str(e)), 400
+
 
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
 @app.route('/api/pdfs/<order_id>.pdf')
@@ -124,6 +110,20 @@ def is_allowed_request():
 @app.errorhandler(404)
 def page_not_found(e):
     return '<h1>404 File Not Found! :(</h1>', 404
+
+def get_shop_logo_url(api_url):
+
+    shop_images = requests.get(api_url + "/shop/images").json()
+    shop_images = [img for img \
+                   in shop_images.get('_embedded', {}).get('images', []) \
+                   if img.get('label', '') == 'logo']
+    logo_url = ''
+    if shop_images:
+        logo_url = shop_images[0].get('_links', {}).get('data', {}).get('href', '')
+    # Hack to remove image link template params
+    logo_url = re.sub(r'\{.*\}', '', logo_url)
+    logo_url += '&height=128'
+    return logo_url
 
 
 def init():

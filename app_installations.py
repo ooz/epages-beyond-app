@@ -22,10 +22,10 @@ class AppInstallations(object):
                                    data=params,
                                    auth=(self.client_id, self.client_secret) ).json()
 
-        installation = _Installation(api_url=api_url,
-                                     access_token=token_response.get('access_token'),
-                                     refresh_token=token_response.get('refresh_token'),
-                                     expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
+        installation = Installation(api_url=api_url,
+                                    access_token=token_response.get('access_token'),
+                                    refresh_token=token_response.get('refresh_token'),
+                                    expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
 
         AppInstallations.installations[urlparse(api_url).hostname] = installation
 
@@ -41,11 +41,11 @@ class AppInstallations(object):
                                    data=params,
                                    auth=(self.client_id, self.client_secret)).json()
 
-        installation = _Installation(api_url=api_url,
-                                     access_token=token_response.get('access_token'),
-                                     expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
+        installation = Installation(api_url=api_url,
+                                    access_token=token_response.get('access_token'),
+                                    expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
 
-        AppInstallations.installations[urlparse(api_url).hostname] = installation
+        AppInstallations.installations[installation.hostname] = installation
 
         return installation.access_token
 
@@ -59,13 +59,18 @@ class AppInstallations(object):
     def get_api_url(hostname):
         return AppInstallations.installations[hostname].api_url
 
-class _Installation(object):
+    @staticmethod
+    def get_installation(hostname):
+        return AppInstallations.installations[hostname]
+
+class Installation(object):
 
     def __init__(self, api_url, access_token, refresh_token=None, expiry_date=None):
         self.api_url = api_url
         self.access_token = access_token
         self.refresh_token = refresh_token
         self.expiry_date = expiry_date
+        self.hostname = urlparse(api_url).hostname
 
     def is_expired(self):
         return date.today() > (self.expiry_date - timedelta(minutes=15))
