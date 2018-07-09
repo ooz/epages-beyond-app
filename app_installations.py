@@ -1,4 +1,6 @@
-
+import base64
+import hashlib
+import hmac
 from datetime import date, timedelta
 from urllib.parse import urlparse
 import requests
@@ -11,9 +13,12 @@ class AppInstallations(object):
         self.client_secret = client_secret
         self.client_id = client_id
 
-    def retrieve_token_from_auth_code(self, api_url, auth_code, token_url):
+    def retrieve_token_from_auth_code(self, api_url, auth_code, token_url, signature):
 
-        assert api_url != '' and auth_code != '' and token_url != ''
+        assert api_url != '' and auth_code != '' and token_url != '' and signature != ''
+
+        assert signature == self._calculate_signature(auth_code, token_url, self.client_secret), "signature invalid"
+
         params = {
             'grant_type': 'code',
             'code': auth_code
@@ -54,6 +59,13 @@ class AppInstallations(object):
         if installation.is_expired():
             return self.retrieve_token_from_client_credentials(installation.api_url)
         return AppInstallations.installations[hostname].access_token
+
+    def _calculate_signature(self, code, access_token_url, client_secret):
+        message = '%s:%s' % (code, access_token_url)
+        digest = hmac.new(client_secret.encode('utf-8'),
+                          msg=message.encode('utf-8'),
+                          digestmod=hashlib.sha1).digest()
+        return base64.b64encode(digest)
 
     @staticmethod
     def get_api_url(hostname):

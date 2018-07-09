@@ -36,8 +36,17 @@ def root_hostname(hostname):
 @app.route('/callback')
 def callback():
     args = request.args
-    #TODO add auth code flow
-    return_url = ""
+    return_url = args.get("return_url")
+    access_token_url = args.get("access_token_url")
+    api_url = args.get("api_url")
+    code = args.get("code")
+    signature = args.get("signature")
+
+    try:
+        APP_INSTALLATIONS.retrieve_token_from_auth_code(api_url, code, access_token_url, signature)
+    except Exception as e:
+        print("token request failed with ", e)
+
     return """<!DOCTYPE html>
 <html>
 <head>
