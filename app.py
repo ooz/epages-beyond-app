@@ -127,10 +127,10 @@ def init():
     CLIENT_ID = os.environ.get('CLIENT_ID', '')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
     API_URL = os.environ.get('API_URL', '')
+    APP_INSTALLATIONS = AppInstallations(CLIENT_ID, CLIENT_SECRET)
     if API_URL != '':
         DEFAULT_HOSTNAME = urlparse(API_URL).hostname
-    APP_INSTALLATIONS = AppInstallations(CLIENT_ID, CLIENT_SECRET)
-    APP_INSTALLATIONS.retrieve_token_from_client_credentials(API_URL)
+        APP_INSTALLATIONS.retrieve_token_from_client_credentials(API_URL)
 
 init()
 if __name__ == '__main__':
