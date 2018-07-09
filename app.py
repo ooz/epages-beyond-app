@@ -13,12 +13,7 @@ import epages
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
 from app_installations import AppInstallations
-from orders import get_orders
-import requests
-import re
-
-from dto import get_order_views, \
-                get_order_extended_pdf_str
+from orders import get_orders, get_order, get_shop_logo_url
 
 app = Flask(__name__)
 
@@ -68,21 +63,18 @@ u'''<h1>Something went wrong when fetching the order list! :(</h1>
 
 
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
-@app.route('/api/pdfs/<order_id>.pdf')
-def pdf(order_id):
-    orders_for_merchant = ORDER_DB.get(ORDERS_FOR_MERCHANT_KEY, {})
-    if order_id in orders_for_merchant.keys():
-        order = orders_for_merchant[order_id]
-        filename = order_id + '.pdf'
-        html_to_render = get_order_extended_pdf_str(CLIENT, order)
-        pdfkit.from_string(html_to_render,
-                           filename, configuration=pdfkit.configuration(wkhtmltopdf="./bin/wkhtmltopdf"))
-        pdffile = open(filename, "rb")
-        response = Response(pdffile.read(), mimetype='application/pdf')
-        pdffile.close()
-        os.remove(filename)
-        return response
-    abort(404)
+@app.route('/api/<hostname>/pdfs/<order_id>.pdf')
+def pdf(hostname, order_id):
+    order = get_order(AppInstallations.get_installation(hostname), order_id)
+    filename = order_id + '.pdf'
+    html_to_render = render_template('order_document.html', order=order)
+    pdfkit.from_string(html_to_render,
+                       filename, configuration=pdfkit.configuration(wkhtmltopdf="./bin/wkhtmltopdf"))
+    pdffile = open(filename, "rb")
+    response = Response(pdffile.read(), mimetype='application/pdf')
+    pdffile.close()
+    os.remove(filename)
+    return response
 
 
 @app.before_request
@@ -110,20 +102,6 @@ def is_allowed_request():
 @app.errorhandler(404)
 def page_not_found(e):
     return '<h1>404 File Not Found! :(</h1>', 404
-
-def get_shop_logo_url(api_url):
-
-    shop_images = requests.get(api_url + "/shop/images").json()
-    shop_images = [img for img \
-                   in shop_images.get('_embedded', {}).get('images', []) \
-                   if img.get('label', '') == 'logo']
-    logo_url = ''
-    if shop_images:
-        logo_url = shop_images[0].get('_links', {}).get('data', {}).get('href', '')
-    # Hack to remove image link template params
-    logo_url = re.sub(r'\{.*\}', '', logo_url)
-    logo_url += '&height=128'
-    return logo_url
 
 
 def init():
