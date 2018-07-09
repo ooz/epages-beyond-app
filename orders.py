@@ -67,7 +67,7 @@ class ProductLineItem(object):
     def __init__(self, product):
         self.name = escape(product.get('product', {}).get('name', ''))
         self.quantity = product.get('quantity', {}).get('value', '')
-        self.tax = "%.0f" % product.get('lineItemTax', {}).get('taxRate', 0.0) * 100.0
+        self.tax = "%.0f" % float(product.get('lineItemTax', {}).get('taxRate', 0.0)) * 100.0
         unit_price = product.get('unitPrice', {})
         self.price_per_item = u'%s %s' % (unit_price.get('amount', ''),
                                           unit_price.get('currency', ''))
