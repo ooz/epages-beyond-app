@@ -8,6 +8,7 @@ Description:
 """
 
 import os
+from urllib.parse import urlparse
 
 from flask import Flask, render_template, request, Response, abort, escape
 import pdfkit
@@ -19,10 +20,17 @@ app = Flask(__name__)
 ORDER_DB = {}
 ORDERS_FOR_MERCHANT_KEY = ''
 APP_INSTALLATIONS = None
+DEFAULT_HOSTNAME = ''
+
+@app.route('/')
+def root():
+    if DEFAULT_HOSTNAME != '':
+        return render_template('index.html', installed=True, hostname=DEFAULT_HOSTNAME)
+    return render_template('index.html', installed=False)
 
 
 @app.route('/<hostname>')
-def root(hostname):
+def root_hostname(hostname):
     return render_template('index.html', installed=True, hostname=hostname)
 
 @app.route('/callback')
@@ -52,7 +60,7 @@ def orderlist(hostname):
 
         orders = get_orders(AppInstallations.get_installation(hostname))
         return render_template('orderlist.html', orders=orders, logo=logo_url)
-    except epages.RESTError as e:
+    except Exception as e:
         return \
 u'''<h1>Something went wrong when fetching the order list! :(</h1>
 <pre>
@@ -105,13 +113,15 @@ def page_not_found(e):
 
 def init():
     global APP_INSTALLATIONS
+    global DEFAULT_HOSTNAME
 
     CLIENT_ID = os.environ.get('CLIENT_ID', '')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
-    api_url = os.environ.get('API_URL', '')
-
+    API_URL = os.environ.get('API_URL', '')
+    if API_URL != '':
+        DEFAULT_HOSTNAME = urlparse(API_URL).hostname
     APP_INSTALLATIONS = AppInstallations(CLIENT_ID, CLIENT_SECRET)
-    APP_INSTALLATIONS.retrieve_token_from_client_credentials(api_url)
+    APP_INSTALLATIONS.retrieve_token_from_client_credentials(API_URL)
 
 init()
 if __name__ == '__main__':
