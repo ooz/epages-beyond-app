@@ -10,13 +10,17 @@
     ],
     "env": {
         "API_URL": {
-            "value": "Insert-your-API-URL-here-or-leave-this-empty-for-installable-apps"
+            "value": "",
+            "description": "API to your ePages shop. If set, this becomes are private (developer) app.",
+            "required": false
         },
         "CLIENT_ID": {
-            "value": "Insert-your-client-id-in-the-heroku-dashboard"
+            "value": "",
+            "description": "Client ID of your app"
         },
         "CLIENT_SECRET": {
-            "value": "Insert-your-client-secret-in-the-heroku-dashboard"
+            "value": "",
+            "description": "Client secret of your app"
         }
     }
 }
