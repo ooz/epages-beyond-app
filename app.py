@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -64,10 +63,10 @@ def callback():
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):
     try:
-        api_url = AppInstallations.get_api_url(hostname)
+        api_url = APP_INSTALLATIONS.get_api_url(hostname)
         logo_url = get_shop_logo_url(api_url)
 
-        orders = get_orders(AppInstallations.get_installation(hostname))
+        orders = get_orders(APP_INSTALLATIONS.get_installation(hostname))
         return render_template('orderlist.html', orders=orders, logo=logo_url)
     except Exception as e:
         return \
@@ -81,7 +80,7 @@ u'''<h1>Something went wrong when fetching the order list! :(</h1>
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
 @app.route('/api/<hostname>/pdfs/<order_id>.pdf')
 def pdf(hostname, order_id):
-    order = get_order(AppInstallations.get_installation(hostname), order_id)
+    order = get_order(APP_INSTALLATIONS.get_installation(hostname), order_id)
     filename = order_id + '.pdf'
     html_to_render = render_template('order_document.html', order=order)
     pdfkit.from_string(html_to_render,

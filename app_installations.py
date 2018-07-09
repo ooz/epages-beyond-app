@@ -9,7 +9,6 @@ import psycopg2
 
 class AppInstallations(object):
 
-
     def __init__(self, client_id, client_secret):
         self.client_secret = client_secret
         self.client_id = client_id
@@ -58,7 +57,7 @@ class AppInstallations(object):
         return installation.access_token
 
     def get_token(self, hostname):
-        installation = AppInstallations.installations[hostname]
+        installation = self.installations[hostname]
         if installation.is_expired():
             return self.retrieve_token_from_client_credentials(installation.api_url)
         return self.get_installation(hostname).access_token
@@ -69,7 +68,6 @@ class AppInstallations(object):
                           msg=message.encode('utf-8'),
                           digestmod=hashlib.sha1).digest()
         return base64.b64encode(digest).decode('utf-8')
-
 
     def get_api_url(self, hostname):
         return self.get_installation(hostname).api_url
@@ -110,7 +108,7 @@ class PostgresAppInstallations(AppInstallations):
                                  expiry_date=entry[4])
 
     def upsert_installation(self, installation):
-
+        return
 
 
 class Installation(object):
@@ -122,5 +120,5 @@ class Installation(object):
         self.expiry_date = expiry_date
         self.hostname = urlparse(api_url).hostname
 
-    def is_expired(self):
+    def is_expired1(self):
         return date.today() > (self.expiry_date - timedelta(minutes=15))

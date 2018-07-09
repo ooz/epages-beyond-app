@@ -32,7 +32,6 @@ def get_shop_logo_url(api_url):
     return logo_url
 
 class OrderListItem(object):
-
     def __init__(self, order, hostname):
         billing_address = order.get('billingAddress')
         grand_total = order.get("grandTotal")
