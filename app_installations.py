@@ -66,7 +66,7 @@ class AppInstallations(object):
         digest = hmac.new(client_secret.encode('utf-8'),
                           msg=message.encode('utf-8'),
                           digestmod=hashlib.sha1).digest()
-        return base64.b64encode(digest)
+        return base64.b64encode(digest).decode('utf-8')
 
     @staticmethod
     def get_api_url(hostname):
