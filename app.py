@@ -47,6 +47,7 @@ def callback():
     try:
         APP_INSTALLATIONS.retrieve_token_from_auth_code(api_url, code, access_token_url, signature)
     except Exception as e:
+        LOGGER.exception(e)
         print("token request failed with ", e)
 
     return """<!DOCTYPE html>
