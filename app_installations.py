@@ -28,7 +28,7 @@ class AppInstallations(object):
         }
         response = requests.post(url=token_url, data=params, auth=(self.client_id, self.client_secret))
         token_response = response.json()
-        installation = self._installation_from_token_response(api_url, token_response)
+        installation = Installation._from_token_response(api_url, token_response)
 
         self.create_or_update_installation(installation)
 
@@ -46,7 +46,7 @@ class AppInstallations(object):
                                    data=params,
                                    auth=(self.client_id, self.client_secret)).json()
 
-        installation = self._installation_from_token_response(api_url, token_response)
+        installation = Installation._from_token_response(api_url, token_response)
 
         self.create_or_update_installation(installation)
 
@@ -99,12 +99,6 @@ class AppInstallations(object):
 
     def _token_url(self, api_url):
         return api_url + "/oauth/token"
-    
-    def _installation_from_token_response(self, api_url, token_response):
-        return Installation(api_url=api_url,
-            access_token=token_response.get('access_token'),
-            refresh_token=token_response.get('refresh_token', None),
-            expiry_date=(date.today() + timedelta(seconds=token_response.get('expires_in'))))
     
         
 class PostgresAppInstallations(AppInstallations):
@@ -162,3 +156,10 @@ class Installation(object):
 
     def is_expired(self):
         return datetime.now() > (self.expiry_date - timedelta(minutes=15))
+
+    @staticmethod
+    def _from_token_response(api_url, token_response):
+        return Installation(api_url=api_url,
+            access_token=token_response.get('access_token'),
+            refresh_token=token_response.get('refresh_token', None),
+            expiry_date=(datetime.now() + timedelta(seconds=token_response.get('expires_in'))))    
