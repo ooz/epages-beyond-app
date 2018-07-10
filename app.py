@@ -133,14 +133,14 @@ def get_installation(hostname):
         raise ShopNotKnown(hostname)
     return installation    
 
-@app.errorhandler(ShopNotKnown)
-def shop_not_known(e):
-    return render_template('index.html', installed=False, error_message="App not installed for the requested shop with hostname %s" % e.hostname)
-
 class ShopNotKnown(Exception):
     def __init__(self, hostname):
         super()
         self.hostname = hostname
+        
+@app.errorhandler(ShopNotKnown)
+def shop_not_known(e):
+    return render_template('index.html', installed=False, error_message="App not installed for the requested shop with hostname %s" % e.hostname)
 
 def init():
     global APP_INSTALLATIONS
