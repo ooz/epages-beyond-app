@@ -1,8 +1,6 @@
-# ePages Beyond Example App
+# ePages Beyond Example App: *Beautiful Order Documents*
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ooz/epages-beyond-app/tree/master)
-
-## *Beautiful Order Documents*
 
 This app shows a list of orders for a configured shop.
 Each order has a link, that triggers rendering a order document containing the line items as a PDF.

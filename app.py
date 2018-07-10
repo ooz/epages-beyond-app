@@ -2,8 +2,9 @@
 
 """
 Author: Oliver Zscheyge
+Author: Mathias Düsterhöft
 Description:
-    Web app that generates beautiful order documents for ePages shops.
+    Web app that generates beautiful order documents for ePages Beyond shops.
 """
 
 import os
@@ -52,7 +53,7 @@ def callback():
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):
     installation = get_installation(hostname)
-        
+
     logo_url = get_shop_logo_url(installation.api_url)
 
     orders = get_orders(installation)
@@ -102,7 +103,7 @@ def get_installation(hostname):
     installation = APP_INSTALLATIONS.get_installation(hostname)
     if not installation:
         raise ShopNotKnown(hostname)
-    return installation    
+    return installation
 
 @app.errorhandler(404)
 def page_not_found(e):

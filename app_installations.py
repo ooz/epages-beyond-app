@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import base64
 import hashlib
 import hmac
@@ -17,7 +19,7 @@ class AppInstallations(object):
     def retrieve_token_from_auth_code(self, api_url, auth_code, token_url, signature):
         """Retrieve a token using the auth code and initialize app installation data
         """
-        
+
         assert api_url != '' and auth_code != '' and token_url != '' and signature != ''
 
         calculated_signature = self._calculate_signature(auth_code, token_url, self.client_secret)
@@ -43,7 +45,7 @@ class AppInstallations(object):
             'grant_type': 'client_credentials'
         }
         token_url = self._token_url(api_url)
-        token_response = requests.post(url=token_url, 
+        token_response = requests.post(url=token_url,
                                    data=params,
                                    auth=(self.client_id, self.client_secret)).json()
 
@@ -63,11 +65,11 @@ class AppInstallations(object):
                 print("Token expired for %s - getting a new one using client credentials" % installation.hostname)
                 self.retrieve_token_from_client_credentials(installation.api_url)
             installation = self._find_installation(hostname)
-        return installation          
-    
+        return installation
+
     def create_or_update_installation(self, installation):
         self.installations[installation.hostname] = installation
-    
+
     def _find_installation(self, hostname):
         return self.installations[hostname]
 
@@ -88,8 +90,8 @@ class AppInstallations(object):
             'refresh_token': installation.refresh_token
         }
         response = requests.post(
-            url=self._token_url(installation.api_url), 
-            data=params, 
+            url=self._token_url(installation.api_url),
+            data=params,
             auth=(self.client_id, self.client_secret))
 
         installation = Installation._from_token_response(installation.api_url, response.json())
@@ -100,8 +102,8 @@ class AppInstallations(object):
 
     def _token_url(self, api_url):
         return api_url + "/oauth/token"
-    
-        
+
+
 class PostgresAppInstallations(AppInstallations):
     """Access app installation data using postgres
     """
@@ -125,7 +127,7 @@ class PostgresAppInstallations(AppInstallations):
         if self._find_installation(installation.hostname):
             print("Updating APP_INSTALLATIONS entry for %s" % installation.hostname)
             sql = "UPDATE APP_INSTALLATIONS SET API_URL=%s, ACCESS_TOKEN=%s, REFRESH_TOKEN=%s, EXPIRY_DATE=%s WHERE HOSTNAME=%s"
-        else: 
+        else:
             print("Creating APP_INSTALLATIONS entry for %s" % installation.hostname)
             sql = "INSERT INTO APP_INSTALLATIONS (API_URL, ACCESS_TOKEN, REFRESH_TOKEN, EXPIRY_DATE, HOSTNAME) VALUES(%s, %s, %s, %s, %s)"
         with psycopg2.connect(self.database_url) as conn:
@@ -143,7 +145,7 @@ class PostgresAppInstallations(AppInstallations):
                                  access_token=entry[2],
                                  refresh_token=entry[3],
                                  expiry_date=entry[4])
-        return None                
+        return None
 
 
 class Installation(object):
@@ -163,4 +165,4 @@ class Installation(object):
         return Installation(api_url=api_url,
             access_token=token_response.get('access_token'),
             refresh_token=token_response.get('refresh_token', None),
-            expiry_date=(datetime.now() + timedelta(seconds=token_response.get('expires_in'))))    
+            expiry_date=(datetime.now() + timedelta(seconds=token_response.get('expires_in'))))
