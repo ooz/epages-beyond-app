@@ -67,21 +67,13 @@ def callback():
 
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):
-    try:
-        installation = get_installation(hostname)
+    installation = get_installation(hostname)
+        
+    logo_url = get_shop_logo_url(installation.api_url)
 
-        logo_url = get_shop_logo_url(installation.api_url)
+    orders = get_orders(installation)
+    return render_template('orderlist.html', orders=orders, logo=logo_url)
 
-        orders = get_orders(installation)
-        return render_template('orderlist.html', orders=orders, logo=logo_url)
-    except Exception as e:
-        LOGGER.exception(e)
-        return \
-u'''<h1>Something went wrong when fetching the order list! :(</h1>
-<pre>
-%s
-</pre>
-''' % escape(str(e)), 400
 
 
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
@@ -137,7 +129,7 @@ class ShopNotKnown(Exception):
     def __init__(self, hostname):
         super()
         self.hostname = hostname
-        
+
 @app.errorhandler(ShopNotKnown)
 def shop_not_known(e):
     return render_template('index.html', installed=False, error_message="App not installed for the requested shop with hostname %s" % e.hostname)
