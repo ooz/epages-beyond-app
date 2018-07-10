@@ -17,6 +17,7 @@ class AppInstallations(object):
     def retrieve_token_from_auth_code(self, api_url, auth_code, token_url, signature):
         """Retrieve a token using the auth code and initialize app installation data
         """
+        
         assert api_url != '' and auth_code != '' and token_url != '' and signature != ''
 
         calculated_signature = self._calculate_signature(auth_code, token_url, self.client_secret)
@@ -26,8 +27,8 @@ class AppInstallations(object):
             'grant_type': 'authorization_code',
             'code': auth_code
         }
-        response = requests.post(url=token_url, data=params, auth=(self.client_id, self.client_secret))
-        token_response = response.json()
+        token_response = requests.post(url=token_url, data=params, auth=(self.client_id, self.client_secret)).json()
+
         installation = Installation._from_token_response(api_url, token_response)
 
         self.create_or_update_installation(installation)
@@ -91,7 +92,7 @@ class AppInstallations(object):
             data=params, 
             auth=(self.client_id, self.client_secret))
 
-        installation = self._installation_from_token_response(installation.api_url, response.json())
+        installation = Installation._from_token_response(installation.api_url, response.json())
 
         self.create_or_update_installation(installation)
 
