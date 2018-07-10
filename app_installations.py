@@ -122,7 +122,7 @@ class PostgresAppInstallations(AppInstallations):
 
     def create_or_update_installation(self, installation):
         sql = ''
-        if self.get_installation(installation.hostname):
+        if self._find_installation(installation.hostname):
             print("Updating APP_INSTALLATIONS entry for %s" % installation.hostname)
             sql = "UPDATE APP_INSTALLATIONS SET API_URL=%s, ACCESS_TOKEN=%s, REFRESH_TOKEN=%s, EXPIRY_DATE=%s WHERE HOSTNAME=%s"
         else: 
