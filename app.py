@@ -68,7 +68,7 @@ def callback():
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):
     try:
-        installation = APP_INSTALLATIONS.get_installation(hostname)
+        installation = get_installation(hostname)
 
         logo_url = get_shop_logo_url(installation.api_url)
 
@@ -87,7 +87,9 @@ u'''<h1>Something went wrong when fetching the order list! :(</h1>
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
 @app.route('/api/<hostname>/pdfs/<order_id>.pdf')
 def pdf(hostname, order_id):
-    order = get_order(APP_INSTALLATIONS.get_installation(hostname), order_id)
+    installation = get_installation(hostname)
+
+    order = get_order(installation, order_id)
     filename = order_id + '.pdf'
     html_to_render = render_template('order_document.html', order=order)
     pdfkit.from_string(html_to_render,
@@ -125,6 +127,11 @@ def is_allowed_request():
 def page_not_found(e):
     return '<h1>404 File Not Found! :(</h1>', 404
 
+def get_installation(hostname):
+    installation = APP_INSTALLATIONS.get_installation(hostname)
+    if not installation:
+        return render_template('index.html', installed=False)
+    return installation    
 
 def init():
     global APP_INSTALLATIONS

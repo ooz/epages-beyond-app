@@ -55,7 +55,7 @@ class AppInstallations(object):
 
     def get_installation(self, hostname):
         installation = self._find_installation(hostname)
-        if (installation.is_expired()):
+        if (installation is not None and installation.is_expired()):
             if (installation.refresh_token):
                 print("Token expired for %s - refreshing it using refresh token" % installation.hostname)
                 self._refresh_token(installation)
