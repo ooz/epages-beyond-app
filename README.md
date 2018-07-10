@@ -29,5 +29,15 @@ On the left side you see the order list of the respective shop, on the right sid
 ## Local Development Using Docker
 
 ```bash
-# TODO
+# 1. Build the docker image
+make docker_build
+
+# 1. Initialize the environment variable file
+make docker_init_env
+
+# 2. Edit the env.list file, set CLIENT_ID, CLIENT_SECRET and API_URL
+#    You can obtain those following steps 1. to 3. from "Running it on Heroku"
+
+# 3. Run the app
+make docker_run
 ```
