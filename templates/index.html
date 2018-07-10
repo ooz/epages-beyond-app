@@ -8,6 +8,9 @@
   <body>
     <div class="container pagecontainer">
       <h1>Beautiful Order Documents ... kind of</h1>
+      {% if error_message %}
+      <p>{{ error_message }}</p>
+      {% endif %}
       {% if installed %}
       <p>
         <a href="ui/{{ hostname }}/orders">Login to your order list</a>

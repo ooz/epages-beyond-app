@@ -130,8 +130,17 @@ def page_not_found(e):
 def get_installation(hostname):
     installation = APP_INSTALLATIONS.get_installation(hostname)
     if not installation:
-        return render_template('index.html', installed=False)
+        raise ShopNotKnown(hostname)
     return installation    
+
+@app.errorhandler(ShopNotKnown)
+def shop_not_known(e):
+    return render_template('index.html', installed=False, error_message="App not installed for the requested shop with hostname %s" % e.hostname)
+
+class ShopNotKnown(Exception):
+    def __init__(self, hostname):
+        super()
+        self.hostname = hostname
 
 def init():
     global APP_INSTALLATIONS
