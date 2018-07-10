@@ -34,6 +34,7 @@ def root():
 def root_hostname(hostname):
     return render_template('index.html', installed=True, hostname=hostname)
 
+
 @app.route('/callback')
 def callback():
     args = request.args
@@ -61,6 +62,7 @@ def callback():
 </body>
 </html>
 """ % return_url
+
 
 @app.route('/ui/<hostname>/orders')
 def orderlist(hostname):

@@ -19,8 +19,8 @@ class AppInstallations(object):
         """
         assert api_url != '' and auth_code != '' and token_url != '' and signature != ''
 
-        #calculated_signature = self._calculate_signature(auth_code, token_url, self.client_secret)
-        #assert signature == calculated_signature, "signature invalid - found %s but expected %s" % (signature, calculated_signature)
+        calculated_signature = self._calculate_signature(auth_code, token_url, self.client_secret)
+        assert signature == calculated_signature, "signature invalid - found %s but expected %s" % (signature, calculated_signature)
 
         params = {
             'grant_type': 'authorization_code',
@@ -125,5 +125,5 @@ class Installation(object):
         self.expiry_date = expiry_date
         self.hostname = urlparse(api_url).hostname
 
-    def is_expired1(self):
+    def is_expired(self):
         return date.today() > (self.expiry_date - timedelta(minutes=15))
