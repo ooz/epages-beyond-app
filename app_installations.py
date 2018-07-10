@@ -1,7 +1,7 @@
 import base64
 import hashlib
 import hmac
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 import requests
 import os
@@ -161,4 +161,4 @@ class Installation(object):
         self.hostname = urlparse(api_url).hostname
 
     def is_expired(self):
-        return date.today() > (self.expiry_date - timedelta(minutes=15))
+        return datetime.now() > (self.expiry_date - timedelta(minutes=15))
