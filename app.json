@@ -8,6 +8,14 @@
         { "url": "https://github.com/dscout/wkhtmltopdf-buildpack" },
         { "url": "heroku/python" }
     ],
+    "addons": [
+        {
+            "plan": "heroku-postgresql:hobby-dev",
+            "options": {
+                "version": "10.4"
+            }
+        }
+    ],
     "env": {
         "API_URL": {
             "value": "",
