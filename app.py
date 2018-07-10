@@ -44,25 +44,9 @@ def callback():
     code = args.get("code")
     signature = unquote(args.get("signature"))
 
-    try:
-        APP_INSTALLATIONS.retrieve_token_from_auth_code(api_url, code, access_token_url, signature)
-    except Exception as e:
-        LOGGER.exception(e)
-        print("token request failed with ", e)
+    APP_INSTALLATIONS.retrieve_token_from_auth_code(api_url, code, access_token_url, signature)
 
-    return """<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>PythonDemo Callback</title>
-</head>
-<body>
-<h1>Callback</h1>
-<p>Thanks for installing PythonDemo App! Hit the "return" link below to return to your MBO/Commerce Cockpit</p>
-<a href="%s">return</a>
-</body>
-</html>
-""" % return_url
+    return render_template('callback_result.html', return_url=return_url)
 
 
 @app.route('/ui/<hostname>/orders')
@@ -73,7 +57,6 @@ def orderlist(hostname):
 
     orders = get_orders(installation)
     return render_template('orderlist.html', orders=orders, logo=logo_url)
-
 
 
 # Requires wkhtmltox or wkhtmltopdf installed besides Python's pdfkit
@@ -115,15 +98,15 @@ def is_allowed_request():
            '127.0.0' in url or \
            '0.0.0.0:80' in url
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return '<h1>404 File Not Found! :(</h1>', 404
-
 def get_installation(hostname):
     installation = APP_INSTALLATIONS.get_installation(hostname)
     if not installation:
         raise ShopNotKnown(hostname)
     return installation    
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return '<h1>404 File Not Found! :(</h1>', 404
 
 class ShopNotKnown(Exception):
     def __init__(self, hostname):
@@ -133,6 +116,11 @@ class ShopNotKnown(Exception):
 @app.errorhandler(ShopNotKnown)
 def shop_not_known(e):
     return render_template('index.html', installed=False, error_message="App not installed for the requested shop with hostname %s" % e.hostname)
+
+@app.errorhandler(Exception)
+def all_exception_handler(error):
+    LOGGER.exception(error)
+    return 'Error', 500
 
 def init():
     global APP_INSTALLATIONS
