@@ -30,5 +30,10 @@ COPY Pipfile* /
 # Install dependencies
 RUN pipenv install
 
+EXPOSE 8080
+
+# Hack to bind to correct IP/port for docker and use defaults for Heroku
+ENV RUNNING_IN_DOCKER true
+
 # Run app
 CMD pipenv run python /app.py

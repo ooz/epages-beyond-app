@@ -20,7 +20,7 @@ docker_build:
 	docker build -t oozz/epages-beyond-app:latest .
 
 docker_run:
-	docker run --env-file ./env.list --network="host" -it oozz/epages-beyond-app:latest
+	docker run --env-file ./env.list -p 8080:8080 -it oozz/epages-beyond-app:latest
 
 docker_buildrun: docker_build docker_run
 

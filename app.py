@@ -68,7 +68,7 @@ def callback():
 def orderlist(hostname):
     try:
         installation = APP_INSTALLATIONS.get_installation(hostname)
-        
+
         logo_url = get_shop_logo_url(installation.api_url)
 
         orders = get_orders(installation)
@@ -144,4 +144,7 @@ def init():
 
 init()
 if __name__ == '__main__':
-    app.run()
+    if os.environ.get('RUNNING_IN_DOCKER', '') != '':
+        app.run(host='0.0.0.0', port=8080, threaded=True)
+    else:
+        app.run()
