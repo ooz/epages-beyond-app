@@ -3,7 +3,7 @@
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ooz/epages-beyond-app/tree/master)
 
 This app shows a list of orders for a configured shop.
-Each order has a link, that triggers rendering a order document containing the line items as a PDF.
+Each order has a link, that triggers rendering an order document containing the line items as a PDF.
 
 ![Screenshot of the app](screenshot.png)
 
