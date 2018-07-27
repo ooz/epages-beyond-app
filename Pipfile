@@ -1,19 +1,25 @@
 [[source]]
+
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
+
 [dev-packages]
-rope = "*"
+
 pylint = "*"
 astroid = "*"
 
+
 [packages]
+
 requests = "*"
-flask = "*"
+Flask = "*"
 pdfkit = "*"
 gunicorn = "*"
 "psycopg2-binary" = "*"
 
+
 [pipenv]
+
 allow_prereleases = true
