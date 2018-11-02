@@ -14,7 +14,7 @@ astroid = "*"
 [packages]
 
 requests = "*"
-Flask = "*"
+flask = "*"
 pdfkit = "*"
 gunicorn = "*"
 "psycopg2-binary" = "*"
