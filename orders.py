@@ -77,8 +77,11 @@ class ProductLineItem(object):
         self.icon = product.get('product', {}).get('_links', {}) \
                     .get('default-image-data', {}).get('href', None)
         # Hack to remove the templated parameters breaking valid HTML hyperlinks
-        self.icon = re.sub(r'\{.*\}', '', self.icon)
-        self.icon += '&width=32'
+        if self.icon:
+            self.icon = re.sub(r'\{.*\}', '', self.icon)
+            self.icon += '&width=32'
+        else:
+            self.icon = ''
 
     def __str__(self):
         return 'BydProduct(%s)' % self.name
